@@ -49,7 +49,10 @@ proxy-groups:
       - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
   - name: "GITHUB"
-    type: select
+    type: url-test
+    url: https://github.com/favicon.ico
+    interval: 300
+    tolerance: 100
     proxies:
       - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
