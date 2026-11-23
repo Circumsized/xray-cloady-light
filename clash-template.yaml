@@ -33,20 +33,31 @@ proxies:
     ws-opts:
       path: "__WS_PATH__"
 proxy-groups:
+    - name: "♻️ 自动选择"
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    lazy: true
+    proxies:
+      - "🇺🇸 美国-西雅图-机房"
   - name: "PROXY"
     type: select
     proxies:
-      - "🇺🇸 美国-西雅图-机房"
+      - "♻️ 自动选择"
+     - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
   - name: "AI"
     type: select
     proxies:
-      - "🇺🇸 美国-西雅图-机房"
+      - "♻️ 自动选择"
+     - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
   - name: "STREAM"
     type: select
     proxies:
-      - "🇺🇸 美国-西雅图-机房"
+      - "♻️ 自动选择"
+     - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
   - name: "GITHUB"
     type: url-test
@@ -89,6 +100,8 @@ rules:
   # 且均为国内可直接访问的服务，走直连可节省节点 10GB/月流量
   - DOMAIN-SUFFIX,deepseek.com,DIRECT
   - DOMAIN-SUFFIX,kimi.com,DIRECT
+  - DOMAIN-SUFFIX,gitcode.com,DIRECT
+  - DOMAIN-SUFFIX,gitee.com,DIRECT
   # 局域网与保留地址（来源：Loyalsoldier/clash-rules lancidr.txt）
   - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
