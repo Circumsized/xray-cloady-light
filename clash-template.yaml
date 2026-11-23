@@ -1,0 +1,134 @@
+port: 7890
+socks-port: 7891
+allow-lan: false
+mode: rule
+log-level: info
+dns:
+  enable: true
+  listen: 127.0.0.1:1053
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "localhost"
+  respect-rules: true
+  default-nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
+  nameserver:
+    - https://cloudflare-dns.com/dns-query
+proxies:
+  - name: "Cloady-USW1-xray"
+    type: vless
+    server: __DOMAIN__
+    port: 443
+    uuid: __UUID__
+    tls: true
+    servername: __DOMAIN__
+    network: ws
+    ws-opts:
+      path: "__WS_PATH__"
+proxy-groups:
+  - name: "PROXY"
+    type: select
+    proxies:
+      - "Cloady-USW1-xray"
+      - "DIRECT"
+  - name: "AI"
+    type: select
+    proxies:
+      - "Cloady-USW1-xray"
+      - "DIRECT"
+  - name: "STREAM"
+    type: select
+    proxies:
+      - "Cloady-USW1-xray"
+      - "DIRECT"
+  - name: "GITHUB"
+    type: select
+    proxies:
+      - "Cloady-USW1-xray"
+      - "DIRECT"
+rule-providers:
+  reject:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list"
+    path: ./ruleset/reject.yaml
+    interval: 86400
+  proxy:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyLite.list"
+    path: ./ruleset/proxy.yaml
+    interval: 86400
+  direct:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaDomain.list"
+    path: ./ruleset/direct.yaml
+    interval: 86400
+  media:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyMedia.list"
+    path: ./ruleset/media.yaml
+    interval: 86400
+rules:
+  - DOMAIN,cloudflare-dns.com,PROXY
+  - DOMAIN,dns.alidns.com,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - DOMAIN-SUFFIX,github.com,GITHUB
+  - DOMAIN-SUFFIX,githubusercontent.com,GITHUB
+  - DOMAIN-SUFFIX,github.io,GITHUB
+  - DOMAIN-SUFFIX,githubassets.com,GITHUB
+  - DOMAIN-SUFFIX,objects.githubusercontent.com,GITHUB
+  - DOMAIN-SUFFIX,codeload.github.com,GITHUB
+  - DOMAIN-SUFFIX,api.github.com,GITHUB
+  - DOMAIN-SUFFIX,raw.githubusercontent.com,GITHUB
+  - DOMAIN-SUFFIX,gist.github.com,GITHUB
+  - DOMAIN-SUFFIX,openai.com,AI
+  - DOMAIN-SUFFIX,chatgpt.com,AI
+  - DOMAIN-SUFFIX,anthropic.com,AI
+  - DOMAIN-SUFFIX,claude.ai,AI
+  - DOMAIN-SUFFIX,gemini.google.com,AI
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,AI
+  - DOMAIN-SUFFIX,ai.google.dev,AI
+  - DOMAIN-SUFFIX,perplexity.ai,AI
+  - DOMAIN-SUFFIX,x.ai,AI
+  - DOMAIN-SUFFIX,grok.com,AI
+  - DOMAIN-SUFFIX,poe.com,AI
+  - DOMAIN-SUFFIX,cursor.com,AI
+  - DOMAIN-SUFFIX,coze.com,AI
+  - DOMAIN-SUFFIX,netflix.com,STREAM
+  - DOMAIN-SUFFIX,netflix.net,STREAM
+  - DOMAIN-SUFFIX,nflxvideo.net,STREAM
+  - DOMAIN-SUFFIX,spotify.com,STREAM
+  - DOMAIN-SUFFIX,scdn.co,STREAM
+  - DOMAIN-SUFFIX,primevideo.com,STREAM
+  - DOMAIN-SUFFIX,amazonvideo.com,STREAM
+  - DOMAIN-SUFFIX,disneyplus.com,STREAM
+  - DOMAIN-SUFFIX,disney-plus.net,STREAM
+  - DOMAIN-SUFFIX,dssott.com,STREAM
+  - DOMAIN-SUFFIX,youtube.com,STREAM
+  - DOMAIN-SUFFIX,googlevideo.com,STREAM
+  - DOMAIN-SUFFIX,ytimg.com,STREAM
+  - DOMAIN-SUFFIX,tiktok.com,STREAM
+  - DOMAIN-SUFFIX,tiktokv.com,STREAM
+  - DOMAIN-SUFFIX,hulu.com,STREAM
+  - DOMAIN-SUFFIX,hbomax.com,STREAM
+  - DOMAIN-SUFFIX,max.com,STREAM
+  - RULE-SET,reject,REJECT
+  - RULE-SET,media,STREAM
+  - RULE-SET,proxy,PROXY
+  - RULE-SET,direct,DIRECT
+  - GEOSITE,cn,DIRECT
+  - GEOIP,CN,DIRECT,no-resolve
+  - MATCH,PROXY
