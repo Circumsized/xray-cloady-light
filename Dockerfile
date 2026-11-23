@@ -3,7 +3,7 @@
 FROM ghcr.io/xtls/xray-core:latest AS xray
 # Stage 2: Alpine with shell + entrypoint (lightweight)
 FROM alpine:3.20
-RUN apk add --no-cache ca-certificates tzdata caddy
+RUN apk add --no-cache ca-certificates tzdata caddy socat
 COPY --from=xray /usr/local/bin/xray /usr/local/bin/xray
 COPY entrypoint.sh /entrypoint.sh
 COPY clash-template.yaml /clash-template.yaml
