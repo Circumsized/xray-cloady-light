@@ -22,7 +22,7 @@ dns:
   nameserver:
     - https://cloudflare-dns.com/dns-query
 proxies:
-  - name: "Cloady-USW1-xray"
+  - name: "🇺🇸 美国-西雅图-机房"
     type: vless
     server: __DOMAIN__
     port: 443
@@ -36,22 +36,22 @@ proxy-groups:
   - name: "PROXY"
     type: select
     proxies:
-      - "Cloady-USW1-xray"
+      - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
   - name: "AI"
     type: select
     proxies:
-      - "Cloady-USW1-xray"
+      - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
   - name: "STREAM"
     type: select
     proxies:
-      - "Cloady-USW1-xray"
+      - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
   - name: "GITHUB"
     type: select
     proxies:
-      - "Cloady-USW1-xray"
+      - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
 rule-providers:
   reject:
