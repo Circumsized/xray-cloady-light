@@ -129,6 +129,4 @@ rules:
   - RULE-SET,media,STREAM
   - RULE-SET,proxy,PROXY
   - RULE-SET,direct,DIRECT
-  - GEOSITE,cn,DIRECT
-  - GEOIP,CN,DIRECT,no-resolve
   - MATCH,PROXY
