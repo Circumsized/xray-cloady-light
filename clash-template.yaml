@@ -33,7 +33,13 @@ proxies:
     ws-opts:
       path: "__WS_PATH__"
 proxy-groups:
-    - name: "♻️ 自动选择"
+  - name: "🚀 节点选择"
+    type: select
+    proxies:
+      - "♻️ 自动选择"
+      - "🇺🇸 美国-西雅图-机房"
+      - "DIRECT"
+  - name: "♻️ 自动选择"
     type: url-test
     url: http://www.gstatic.com/generate_204
     interval: 300
@@ -41,30 +47,27 @@ proxy-groups:
     lazy: true
     proxies:
       - "🇺🇸 美国-西雅图-机房"
-  - name: "PROXY"
+  - name: "🤖 AI"
+    type: select
+    proxies:
+      - "🇺🇸 美国-西雅图-机房"
+      - "🚀 节点选择"
+      - "DIRECT"
+  - name: "💎 Gemini"
+    type: select
+    proxies:
+      - "🇺🇸 美国-西雅图-机房"
+      - "🤖 AI"
+  - name: "🐙 GitHub"
+    type: select
+    proxies:
+      - "🇺🇸 美国-西雅图-机房"
+      - "♻️ 自动选择"
+      - "DIRECT"
+  - name: "🎬 流媒体"
     type: select
     proxies:
       - "♻️ 自动选择"
-     - "🇺🇸 美国-西雅图-机房"
-      - "DIRECT"
-  - name: "AI"
-    type: select
-    proxies:
-      - "♻️ 自动选择"
-     - "🇺🇸 美国-西雅图-机房"
-      - "DIRECT"
-  - name: "STREAM"
-    type: select
-    proxies:
-      - "♻️ 自动选择"
-     - "🇺🇸 美国-西雅图-机房"
-      - "DIRECT"
-  - name: "GITHUB"
-    type: url-test
-    url: https://github.com/favicon.ico
-    interval: 300
-    tolerance: 100
-    proxies:
       - "🇺🇸 美国-西雅图-机房"
       - "DIRECT"
 rule-providers:
@@ -76,15 +79,57 @@ rule-providers:
     interval: 86400
   proxy:
     type: http
-    behavior: classical
-    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyLite.list"
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt"
     path: ./ruleset/proxy.yaml
+    interval: 86400
+  gfw:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt"
+    path: ./ruleset/gfw.yaml
+    interval: 86400
+  tld-not-cn:
+    type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/tld-not-cn.txt"
+    path: ./ruleset/tld-not-cn.yaml
     interval: 86400
   direct:
     type: http
+    behavior: domain
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt"
+    path: ./ruleset/direct.yaml
+    interval: 86400
+  chinadomain:
+    type: http
     behavior: classical
     url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaDomain.list"
-    path: ./ruleset/direct.yaml
+    path: ./ruleset/chinadomain.yaml
+    interval: 86400
+  chinaip:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaIp.list"
+    path: ./ruleset/chinaip.yaml
+    interval: 86400
+  chinacompanyip:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaCompanyIp.list"
+    path: ./ruleset/chinacompanyip.yaml
+    interval: 86400
+  cncidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt"
+    path: ./ruleset/cncidr.yaml
+    interval: 86400
+  lancidr:
+    type: http
+    behavior: ipcidr
+    url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt"
+    path: ./ruleset/lancidr.yaml
     interval: 86400
   media:
     type: http
@@ -92,145 +137,202 @@ rule-providers:
     url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyMedia.list"
     path: ./ruleset/media.yaml
     interval: 86400
+  openai:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/openai.mrs"
+    path: ./ruleset/openai.mrs
+    interval: 86400
+  anthropic:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/anthropic.mrs"
+    path: ./ruleset/anthropic.mrs
+    interval: 86400
+  gemini:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google-gemini.mrs"
+    path: ./ruleset/gemini.mrs
+    interval: 86400
+  github:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://cdn.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/github.mrs"
+    path: ./ruleset/github.mrs
+    interval: 86400
 rules:
   # DoH 上游：按 DNS 配置分流（Cloudflare 走代理、阿里走直连）
-  - DOMAIN,cloudflare-dns.com,PROXY
+  - DOMAIN,cloudflare-dns.com,🚀 节点选择
   - DOMAIN,dns.alidns.com,DIRECT
-  # 国内 AI 服务（直连）：deepseek.com / kimi.com 均不在 ACL4SSR ChinaDomain.list 中，
-  # 且均为国内可直接访问的服务，走直连可节省节点 10GB/月流量
+  # 例外（缺口补丁）：国内站直连，置顶
+  # deepseek / kimi：不在 ChinaDomain.list，国内可直接访问，走直连省节点流量
   - DOMAIN-SUFFIX,deepseek.com,DIRECT
   - DOMAIN-SUFFIX,kimi.com,DIRECT
+  # gitcode / gitee：不在 ChinaDomain.list 也不在代理表，曾落到 MATCH 走美国节点
+  # 导致 ERR_EMPTY_RESPONSE；国内可直接访问，走直连
   - DOMAIN-SUFFIX,gitcode.com,DIRECT
   - DOMAIN-SUFFIX,gitee.com,DIRECT
-  # 局域网与保留地址（来源：Loyalsoldier/clash-rules lancidr.txt）
+  # CDN 与 Google 中国（省流量）：jsDelivr 有中国节点，直连更快且不耗节点流量；
+  # google.cn 是 Google 在中国的可直连域名，必须放在 google.com 代理规则之前
+  - DOMAIN-SUFFIX,cdn.jsdelivr.net,DIRECT
+  - DOMAIN-SUFFIX,google.cn,DIRECT
+  # 局域网与保留地址
   - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
   - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
   - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
   - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
-  # GitHub（已去重：DOMAIN-SUFFIX 已覆盖子域名，见 notes）
-  - DOMAIN-SUFFIX,github.com,GITHUB
-  - DOMAIN-SUFFIX,githubusercontent.com,GITHUB
-  - DOMAIN-SUFFIX,github.io,GITHUB
-  - DOMAIN-SUFFIX,githubassets.com,GITHUB
-  # AI 服务（逐条来源见 rules-v2-notes.md）
-  # OpenAI / ChatGPT
-  - DOMAIN-SUFFIX,openai.com,AI
-  - DOMAIN-SUFFIX,chatgpt.com,AI
-  - DOMAIN-SUFFIX,chat.com,AI
-  - DOMAIN-SUFFIX,sora.com,AI
-  - DOMAIN-SUFFIX,oaistatic.com,AI
-  - DOMAIN-SUFFIX,oaiusercontent.com,AI
-  # Anthropic / Claude
-  - DOMAIN-SUFFIX,anthropic.com,AI
-  - DOMAIN-SUFFIX,claude.ai,AI
-  - DOMAIN-SUFFIX,claude.com,AI
-  - DOMAIN-SUFFIX,clau.de,AI
-  - DOMAIN-SUFFIX,claudeusercontent.com,AI
-  # Google AI
-  - DOMAIN-SUFFIX,gemini.google.com,AI
-  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,AI
-  - DOMAIN-SUFFIX,ai.google.dev,AI
-  - DOMAIN-SUFFIX,aistudio.google.com,AI
-  - DOMAIN-SUFFIX,notebooklm.google.com,AI
-  - DOMAIN-SUFFIX,generativeai.google,AI
-  - DOMAIN-SUFFIX,makersuite.google.com,AI
-  - DOMAIN-SUFFIX,deepmind.com,AI
-  - DOMAIN-SUFFIX,deepmind.google,AI
-  - DOMAIN-SUFFIX,antigravity.google,AI
-  # xAI / Grok
-  - DOMAIN-SUFFIX,x.ai,AI
-  - DOMAIN-SUFFIX,grok.com,AI
-  - DOMAIN-SUFFIX,grokipedia.com,AI
-  - DOMAIN-SUFFIX,grokusercontent.com,AI
-  # Perplexity
-  - DOMAIN-SUFFIX,perplexity.ai,AI
-  - DOMAIN-SUFFIX,pplx.ai,AI
-  # Meta AI
-  - DOMAIN-SUFFIX,meta.ai,AI
-  - DOMAIN-SUFFIX,muse.ai,AI
-  # Microsoft Copilot / GitHub Copilot
-  - DOMAIN-SUFFIX,copilot.microsoft.com,AI
-  - DOMAIN-SUFFIX,copilot.com,AI
-  - DOMAIN-SUFFIX,githubcopilot.com,AI
-  # 模型 API 与推理平台
-  - DOMAIN-SUFFIX,openrouter.ai,AI
-  - DOMAIN-SUFFIX,groq.com,AI
-  - DOMAIN-SUFFIX,mistral.ai,AI
-  - DOMAIN-SUFFIX,together.ai,AI
-  - DOMAIN-SUFFIX,fireworks.ai,AI
-  - DOMAIN-SUFFIX,replicate.com,AI
-  - DOMAIN-SUFFIX,cerebras.ai,AI
-  - DOMAIN-SUFFIX,cohere.com,AI
-  - DOMAIN-SUFFIX,cohere.ai,AI
-  - DOMAIN-SUFFIX,huggingface.co,AI
-  - DOMAIN-SUFFIX,dify.ai,AI
-  - DOMAIN-SUFFIX,gateway.ai.cloudflare.com,AI
-  # AI 编程助手与 IDE
-  - DOMAIN-SUFFIX,cursor.com,AI
-  - DOMAIN-SUFFIX,cursor.sh,AI
-  - DOMAIN-SUFFIX,cursor-cdn.com,AI
-  - DOMAIN-SUFFIX,cursorapi.com,AI
-  - DOMAIN-SUFFIX,windsurf.com,AI
-  - DOMAIN-SUFFIX,codeium.com,AI
-  - DOMAIN-SUFFIX,zed.dev,AI
-  - DOMAIN-SUFFIX,trae.ai,AI
-  - DOMAIN-SUFFIX,kiro.dev,AI
-  - DOMAIN-SUFFIX,augment.com,AI
-  - DOMAIN-SUFFIX,augmentcode.com,AI
-  - DOMAIN-SUFFIX,jetbrains.ai,AI
-  - DOMAIN-SUFFIX,grazie.ai,AI
-  # AI 应用生成器
-  - DOMAIN-SUFFIX,v0.dev,AI
-  - DOMAIN-SUFFIX,bolt.new,AI
-  - DOMAIN-SUFFIX,lovable.dev,AI
-  # 其他 AI 服务
-  - DOMAIN-SUFFIX,poe.com,AI
-  - DOMAIN-SUFFIX,coze.com,AI
-  - DOMAIN-SUFFIX,jasper.ai,AI
-  - DOMAIN-SUFFIX,openart.ai,AI
-  # 流媒体（逐条来源见 rules-v2-notes.md）
-  # Netflix
-  - DOMAIN-SUFFIX,netflix.com,STREAM
-  - DOMAIN-SUFFIX,netflix.net,STREAM
-  - DOMAIN-SUFFIX,nflxvideo.net,STREAM
-  - DOMAIN-SUFFIX,nflximg.com,STREAM
-  - DOMAIN-SUFFIX,fast.com,STREAM
-  # Spotify
-  - DOMAIN-SUFFIX,spotify.com,STREAM
-  - DOMAIN-SUFFIX,scdn.co,STREAM
-  # Prime Video
-  - DOMAIN-SUFFIX,primevideo.com,STREAM
-  - DOMAIN-SUFFIX,amazonvideo.com,STREAM
-  # Disney+
-  - DOMAIN-SUFFIX,disneyplus.com,STREAM
-  - DOMAIN-SUFFIX,disney-plus.net,STREAM
-  - DOMAIN-SUFFIX,dssott.com,STREAM
-  # YouTube
-  - DOMAIN-SUFFIX,youtube.com,STREAM
-  - DOMAIN-SUFFIX,youtu.be,STREAM
-  - DOMAIN-SUFFIX,googlevideo.com,STREAM
-  - DOMAIN-SUFFIX,ytimg.com,STREAM
-  # TikTok
-  - DOMAIN-SUFFIX,tiktok.com,STREAM
-  - DOMAIN-SUFFIX,tiktokv.com,STREAM
-  - DOMAIN-SUFFIX,tiktokcdn.com,STREAM
-  # Hulu / Max
-  - DOMAIN-SUFFIX,hulu.com,STREAM
-  - DOMAIN-SUFFIX,hbomax.com,STREAM
-  - DOMAIN-SUFFIX,max.com,STREAM
-  # 其他流媒体
-  - DOMAIN-SUFFIX,paramountplus.com,STREAM
-  - DOMAIN-SUFFIX,peacocktv.com,STREAM
-  - DOMAIN-SUFFIX,tv.apple.com,STREAM
-  - DOMAIN-SUFFIX,twitch.tv,STREAM
-  - DOMAIN-SUFFIX,deezer.com,STREAM
-  - DOMAIN-SUFFIX,tidal.com,STREAM
-  - DOMAIN-SUFFIX,soundcloud.com,STREAM
-  - DOMAIN-SUFFIX,dazn.com,STREAM
+  - RULE-SET,lancidr,DIRECT
+  # 广告拦截
   - RULE-SET,reject,REJECT
-  - RULE-SET,media,STREAM
-  - RULE-SET,proxy,PROXY
+  # AI 服务（在所有中国规则之上，避免被直连规则截走）
+  # MetaCubeX MRS 规则集（官方域名清单）+ 手工补齐
+  - RULE-SET,openai,🤖 AI
+  - RULE-SET,anthropic,🤖 AI
+  - RULE-SET,gemini,💎 Gemini
+  # OpenAI / ChatGPT
+  - DOMAIN-SUFFIX,openai.com,🤖 AI
+  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI
+  - DOMAIN-SUFFIX,chat.com,🤖 AI
+  - DOMAIN-SUFFIX,sora.com,🤖 AI
+  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI
+  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI
+  # Anthropic / Claude
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI
+  - DOMAIN-SUFFIX,claude.com,🤖 AI
+  - DOMAIN-SUFFIX,clau.de,🤖 AI
+  - DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI
+  # Claude 人机验证与登录依赖
+  - DOMAIN-SUFFIX,challenges.cloudflare.com,🤖 AI
+  # xAI / Grok
+  - DOMAIN-SUFFIX,x.ai,🤖 AI
+  - DOMAIN-SUFFIX,grok.com,🤖 AI
+  - DOMAIN-SUFFIX,grokipedia.com,🤖 AI
+  - DOMAIN-SUFFIX,grokusercontent.com,🤖 AI
+  # Perplexity
+  - DOMAIN-SUFFIX,perplexity.ai,🤖 AI
+  - DOMAIN-SUFFIX,pplx.ai,🤖 AI
+  # Meta AI
+  - DOMAIN-SUFFIX,meta.ai,🤖 AI
+  - DOMAIN-SUFFIX,muse.ai,🤖 AI
+  # Microsoft Copilot / GitHub Copilot
+  - DOMAIN-SUFFIX,copilot.microsoft.com,🤖 AI
+  - DOMAIN-SUFFIX,copilot.com,🤖 AI
+  - DOMAIN-SUFFIX,githubcopilot.com,🤖 AI
+  # 模型 API 与推理平台
+  - DOMAIN-SUFFIX,openrouter.ai,🤖 AI
+  - DOMAIN-SUFFIX,groq.com,🤖 AI
+  - DOMAIN-SUFFIX,mistral.ai,🤖 AI
+  - DOMAIN-SUFFIX,together.ai,🤖 AI
+  - DOMAIN-SUFFIX,fireworks.ai,🤖 AI
+  - DOMAIN-SUFFIX,replicate.com,🤖 AI
+  - DOMAIN-SUFFIX,cerebras.ai,🤖 AI
+  - DOMAIN-SUFFIX,cohere.com,🤖 AI
+  - DOMAIN-SUFFIX,cohere.ai,🤖 AI
+  - DOMAIN-SUFFIX,huggingface.co,🤖 AI
+  - DOMAIN-SUFFIX,dify.ai,🤖 AI
+  - DOMAIN-SUFFIX,gateway.ai.cloudflare.com,🤖 AI
+  # AI 编程助手与 IDE
+  - DOMAIN-SUFFIX,cursor.com,🤖 AI
+  - DOMAIN-SUFFIX,cursor.sh,🤖 AI
+  - DOMAIN-SUFFIX,cursor-cdn.com,🤖 AI
+  - DOMAIN-SUFFIX,cursorapi.com,🤖 AI
+  - DOMAIN-SUFFIX,windsurf.com,🤖 AI
+  - DOMAIN-SUFFIX,codeium.com,🤖 AI
+  - DOMAIN-SUFFIX,zed.dev,🤖 AI
+  - DOMAIN-SUFFIX,trae.ai,🤖 AI
+  - DOMAIN-SUFFIX,kiro.dev,🤖 AI
+  - DOMAIN-SUFFIX,augment.com,🤖 AI
+  - DOMAIN-SUFFIX,augmentcode.com,🤖 AI
+  - DOMAIN-SUFFIX,jetbrains.ai,🤖 AI
+  - DOMAIN-SUFFIX,grazie.ai,🤖 AI
+  # AI 应用生成器
+  - DOMAIN-SUFFIX,v0.dev,🤖 AI
+  - DOMAIN-SUFFIX,bolt.new,🤖 AI
+  - DOMAIN-SUFFIX,lovable.dev,🤖 AI
+  # 其他 AI 服务
+  - DOMAIN-SUFFIX,poe.com,🤖 AI
+  - DOMAIN-SUFFIX,coze.com,🤖 AI
+  - DOMAIN-SUFFIX,jasper.ai,🤖 AI
+  - DOMAIN-SUFFIX,openart.ai,🤖 AI
+  # Google AI（单独成组，便于单独控制）
+  - DOMAIN-SUFFIX,gemini.google.com,💎 Gemini
+  - DOMAIN-SUFFIX,generativelanguage.googleapis.com,💎 Gemini
+  - DOMAIN-SUFFIX,ai.google.dev,💎 Gemini
+  - DOMAIN-SUFFIX,aistudio.google.com,💎 Gemini
+  - DOMAIN-SUFFIX,notebooklm.google.com,💎 Gemini
+  - DOMAIN-SUFFIX,generativeai.google,💎 Gemini
+  - DOMAIN-SUFFIX,makersuite.google.com,💎 Gemini
+  - DOMAIN-SUFFIX,deepmind.com,💎 Gemini
+  - DOMAIN-SUFFIX,deepmind.google,💎 Gemini
+  - DOMAIN-SUFFIX,antigravity.google,💎 Gemini
+  - DOMAIN-SUFFIX,accounts.google.com,💎 Gemini
+  - DOMAIN-SUFFIX,oauth2.googleapis.com,💎 Gemini
+  # GitHub（统一一组，覆盖全部域名层级）
+  - RULE-SET,github,🐙 GitHub
+  - DOMAIN-SUFFIX,github.com,🐙 GitHub
+  - DOMAIN-SUFFIX,api.github.com,🐙 GitHub
+  - DOMAIN-SUFFIX,codeload.github.com,🐙 GitHub
+  - DOMAIN-SUFFIX,githubusercontent.com,🐙 GitHub
+  - DOMAIN-SUFFIX,objects.githubusercontent.com,🐙 GitHub
+  - DOMAIN-SUFFIX,github.io,🐙 GitHub
+  - DOMAIN-SUFFIX,githubassets.com,🐙 GitHub
+  - DOMAIN-SUFFIX,ghcr.io,🐙 GitHub
+  # Google 全家桶（同一组，避免 googlevideo 与 API 分离导致播放转圈）
+  - DOMAIN-SUFFIX,youtube.com,🚀 节点选择
+  - DOMAIN-SUFFIX,youtu.be,🚀 节点选择
+  - DOMAIN-SUFFIX,googlevideo.com,🚀 节点选择
+  - DOMAIN-SUFFIX,ytimg.com,🚀 节点选择
+  - DOMAIN-SUFFIX,google.com,🚀 节点选择
+  - DOMAIN-SUFFIX,gstatic.com,🚀 节点选择
+  - DOMAIN-SUFFIX,googleapis.com,🚀 节点选择
+  # 流媒体（非 Google 部分；YouTube 已归入 Google 全家桶）
+  - DOMAIN-SUFFIX,netflix.com,🎬 流媒体
+  - DOMAIN-SUFFIX,netflix.net,🎬 流媒体
+  - DOMAIN-SUFFIX,nflxvideo.net,🎬 流媒体
+  - DOMAIN-SUFFIX,nflximg.com,🎬 流媒体
+  - DOMAIN-SUFFIX,fast.com,🎬 流媒体
+  - DOMAIN-SUFFIX,spotify.com,🎬 流媒体
+  - DOMAIN-SUFFIX,scdn.co,🎬 流媒体
+  - DOMAIN-SUFFIX,primevideo.com,🎬 流媒体
+  - DOMAIN-SUFFIX,amazonvideo.com,🎬 流媒体
+  - DOMAIN-SUFFIX,disneyplus.com,🎬 流媒体
+  - DOMAIN-SUFFIX,disney-plus.net,🎬 流媒体
+  - DOMAIN-SUFFIX,dssott.com,🎬 流媒体
+  - DOMAIN-SUFFIX,tiktok.com,🎬 流媒体
+  - DOMAIN-SUFFIX,tiktokv.com,🎬 流媒体
+  - DOMAIN-SUFFIX,tiktokcdn.com,🎬 流媒体
+  - DOMAIN-SUFFIX,hulu.com,🎬 流媒体
+  - DOMAIN-SUFFIX,hbomax.com,🎬 流媒体
+  - DOMAIN-SUFFIX,max.com,🎬 流媒体
+  - DOMAIN-SUFFIX,paramountplus.com,🎬 流媒体
+  - DOMAIN-SUFFIX,peacocktv.com,🎬 流媒体
+  - DOMAIN-SUFFIX,tv.apple.com,🎬 流媒体
+  - DOMAIN-SUFFIX,twitch.tv,🎬 流媒体
+  - DOMAIN-SUFFIX,deezer.com,🎬 流媒体
+  - DOMAIN-SUFFIX,tidal.com,🎬 流媒体
+  - DOMAIN-SUFFIX,soundcloud.com,🎬 流媒体
+  - DOMAIN-SUFFIX,dazn.com,🎬 流媒体
+  - RULE-SET,media,🎬 流媒体
+  # 通用代理白名单（Loyalsoldier）：被墙域名 + GFW 列表 + 非 .cn 顶级域
+  # tld-not-cn 是兜底安全网：绝大多数境外站用 .com/.net/.org 等非 .cn 后缀，
+  # 走到这里即进代理，不会漏到直连
+  - RULE-SET,proxy,🚀 节点选择
+  - RULE-SET,gfw,🚀 节点选择
+  - RULE-SET,tld-not-cn,🚀 节点选择
+  # 中国直连（多层叠加，避免漏网）
+  - RULE-SET,chinadomain,DIRECT
   - RULE-SET,direct,DIRECT
-  - MATCH,PROXY
+  - RULE-SET,chinaip,DIRECT
+  - RULE-SET,chinacompanyip,DIRECT
+  - RULE-SET,cncidr,DIRECT
+  # 兜底：黑名单模式。未被任何规则命中的连接一律直连，
+  # 中国站永不消耗节点流量；境外站若打不开，把域名加进上方代理白名单即可
+  - MATCH,DIRECT
