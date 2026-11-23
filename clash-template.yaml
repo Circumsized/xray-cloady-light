@@ -57,74 +57,162 @@ rule-providers:
   reject:
     type: http
     behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/BanAD.list"
+    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/BanAD.list"
     path: ./ruleset/reject.yaml
     interval: 86400
   proxy:
     type: http
     behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyLite.list"
+    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyLite.list"
     path: ./ruleset/proxy.yaml
     interval: 86400
   direct:
     type: http
     behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ChinaDomain.list"
+    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ChinaDomain.list"
     path: ./ruleset/direct.yaml
     interval: 86400
   media:
     type: http
     behavior: classical
-    url: "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/ProxyMedia.list"
+    url: "https://cdn.jsdelivr.net/gh/ACL4SSR/ACL4SSR@master/Clash/ProxyMedia.list"
     path: ./ruleset/media.yaml
     interval: 86400
 rules:
+  # DoH 上游：按 DNS 配置分流（Cloudflare 走代理、阿里走直连）
   - DOMAIN,cloudflare-dns.com,PROXY
   - DOMAIN,dns.alidns.com,DIRECT
-  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  # 国内 AI 服务（直连）：deepseek.com / kimi.com 均不在 ACL4SSR ChinaDomain.list 中，
+  # 且均为国内可直接访问的服务，走直连可节省节点 10GB/月流量
+  - DOMAIN-SUFFIX,deepseek.com,DIRECT
+  - DOMAIN-SUFFIX,kimi.com,DIRECT
+  # 局域网与保留地址（来源：Loyalsoldier/clash-rules lancidr.txt）
   - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
-  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
   - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  # GitHub（已去重：DOMAIN-SUFFIX 已覆盖子域名，见 notes）
   - DOMAIN-SUFFIX,github.com,GITHUB
   - DOMAIN-SUFFIX,githubusercontent.com,GITHUB
   - DOMAIN-SUFFIX,github.io,GITHUB
   - DOMAIN-SUFFIX,githubassets.com,GITHUB
-  - DOMAIN-SUFFIX,objects.githubusercontent.com,GITHUB
-  - DOMAIN-SUFFIX,codeload.github.com,GITHUB
-  - DOMAIN-SUFFIX,api.github.com,GITHUB
-  - DOMAIN-SUFFIX,raw.githubusercontent.com,GITHUB
-  - DOMAIN-SUFFIX,gist.github.com,GITHUB
+  # AI 服务（逐条来源见 rules-v2-notes.md）
+  # OpenAI / ChatGPT
   - DOMAIN-SUFFIX,openai.com,AI
   - DOMAIN-SUFFIX,chatgpt.com,AI
+  - DOMAIN-SUFFIX,chat.com,AI
+  - DOMAIN-SUFFIX,sora.com,AI
+  - DOMAIN-SUFFIX,oaistatic.com,AI
+  - DOMAIN-SUFFIX,oaiusercontent.com,AI
+  # Anthropic / Claude
   - DOMAIN-SUFFIX,anthropic.com,AI
   - DOMAIN-SUFFIX,claude.ai,AI
+  - DOMAIN-SUFFIX,claude.com,AI
+  - DOMAIN-SUFFIX,clau.de,AI
+  - DOMAIN-SUFFIX,claudeusercontent.com,AI
+  # Google AI
   - DOMAIN-SUFFIX,gemini.google.com,AI
   - DOMAIN-SUFFIX,generativelanguage.googleapis.com,AI
   - DOMAIN-SUFFIX,ai.google.dev,AI
-  - DOMAIN-SUFFIX,perplexity.ai,AI
+  - DOMAIN-SUFFIX,aistudio.google.com,AI
+  - DOMAIN-SUFFIX,notebooklm.google.com,AI
+  - DOMAIN-SUFFIX,generativeai.google,AI
+  - DOMAIN-SUFFIX,makersuite.google.com,AI
+  - DOMAIN-SUFFIX,deepmind.com,AI
+  - DOMAIN-SUFFIX,deepmind.google,AI
+  - DOMAIN-SUFFIX,antigravity.google,AI
+  # xAI / Grok
   - DOMAIN-SUFFIX,x.ai,AI
   - DOMAIN-SUFFIX,grok.com,AI
-  - DOMAIN-SUFFIX,poe.com,AI
+  - DOMAIN-SUFFIX,grokipedia.com,AI
+  - DOMAIN-SUFFIX,grokusercontent.com,AI
+  # Perplexity
+  - DOMAIN-SUFFIX,perplexity.ai,AI
+  - DOMAIN-SUFFIX,pplx.ai,AI
+  # Meta AI
+  - DOMAIN-SUFFIX,meta.ai,AI
+  - DOMAIN-SUFFIX,muse.ai,AI
+  # Microsoft Copilot / GitHub Copilot
+  - DOMAIN-SUFFIX,copilot.microsoft.com,AI
+  - DOMAIN-SUFFIX,copilot.com,AI
+  - DOMAIN-SUFFIX,githubcopilot.com,AI
+  # 模型 API 与推理平台
+  - DOMAIN-SUFFIX,openrouter.ai,AI
+  - DOMAIN-SUFFIX,groq.com,AI
+  - DOMAIN-SUFFIX,mistral.ai,AI
+  - DOMAIN-SUFFIX,together.ai,AI
+  - DOMAIN-SUFFIX,fireworks.ai,AI
+  - DOMAIN-SUFFIX,replicate.com,AI
+  - DOMAIN-SUFFIX,cerebras.ai,AI
+  - DOMAIN-SUFFIX,cohere.com,AI
+  - DOMAIN-SUFFIX,cohere.ai,AI
+  - DOMAIN-SUFFIX,huggingface.co,AI
+  - DOMAIN-SUFFIX,dify.ai,AI
+  - DOMAIN-SUFFIX,gateway.ai.cloudflare.com,AI
+  # AI 编程助手与 IDE
   - DOMAIN-SUFFIX,cursor.com,AI
+  - DOMAIN-SUFFIX,cursor.sh,AI
+  - DOMAIN-SUFFIX,cursor-cdn.com,AI
+  - DOMAIN-SUFFIX,cursorapi.com,AI
+  - DOMAIN-SUFFIX,windsurf.com,AI
+  - DOMAIN-SUFFIX,codeium.com,AI
+  - DOMAIN-SUFFIX,zed.dev,AI
+  - DOMAIN-SUFFIX,trae.ai,AI
+  - DOMAIN-SUFFIX,kiro.dev,AI
+  - DOMAIN-SUFFIX,augment.com,AI
+  - DOMAIN-SUFFIX,augmentcode.com,AI
+  - DOMAIN-SUFFIX,jetbrains.ai,AI
+  - DOMAIN-SUFFIX,grazie.ai,AI
+  # AI 应用生成器
+  - DOMAIN-SUFFIX,v0.dev,AI
+  - DOMAIN-SUFFIX,bolt.new,AI
+  - DOMAIN-SUFFIX,lovable.dev,AI
+  # 其他 AI 服务
+  - DOMAIN-SUFFIX,poe.com,AI
   - DOMAIN-SUFFIX,coze.com,AI
+  - DOMAIN-SUFFIX,jasper.ai,AI
+  - DOMAIN-SUFFIX,openart.ai,AI
+  # 流媒体（逐条来源见 rules-v2-notes.md）
+  # Netflix
   - DOMAIN-SUFFIX,netflix.com,STREAM
   - DOMAIN-SUFFIX,netflix.net,STREAM
   - DOMAIN-SUFFIX,nflxvideo.net,STREAM
+  - DOMAIN-SUFFIX,nflximg.com,STREAM
+  - DOMAIN-SUFFIX,fast.com,STREAM
+  # Spotify
   - DOMAIN-SUFFIX,spotify.com,STREAM
   - DOMAIN-SUFFIX,scdn.co,STREAM
+  # Prime Video
   - DOMAIN-SUFFIX,primevideo.com,STREAM
   - DOMAIN-SUFFIX,amazonvideo.com,STREAM
+  # Disney+
   - DOMAIN-SUFFIX,disneyplus.com,STREAM
   - DOMAIN-SUFFIX,disney-plus.net,STREAM
   - DOMAIN-SUFFIX,dssott.com,STREAM
+  # YouTube
   - DOMAIN-SUFFIX,youtube.com,STREAM
+  - DOMAIN-SUFFIX,youtu.be,STREAM
   - DOMAIN-SUFFIX,googlevideo.com,STREAM
   - DOMAIN-SUFFIX,ytimg.com,STREAM
+  # TikTok
   - DOMAIN-SUFFIX,tiktok.com,STREAM
   - DOMAIN-SUFFIX,tiktokv.com,STREAM
+  - DOMAIN-SUFFIX,tiktokcdn.com,STREAM
+  # Hulu / Max
   - DOMAIN-SUFFIX,hulu.com,STREAM
   - DOMAIN-SUFFIX,hbomax.com,STREAM
   - DOMAIN-SUFFIX,max.com,STREAM
+  # 其他流媒体
+  - DOMAIN-SUFFIX,paramountplus.com,STREAM
+  - DOMAIN-SUFFIX,peacocktv.com,STREAM
+  - DOMAIN-SUFFIX,tv.apple.com,STREAM
+  - DOMAIN-SUFFIX,twitch.tv,STREAM
+  - DOMAIN-SUFFIX,deezer.com,STREAM
+  - DOMAIN-SUFFIX,tidal.com,STREAM
+  - DOMAIN-SUFFIX,soundcloud.com,STREAM
+  - DOMAIN-SUFFIX,dazn.com,STREAM
   - RULE-SET,reject,REJECT
   - RULE-SET,media,STREAM
   - RULE-SET,proxy,PROXY
